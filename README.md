@@ -2,7 +2,7 @@
 
 pong c++
 
-To compile:
+To compile:\n
 g++ pong.cpp -o pong -lncurses
 To start the game:
 ./pong
