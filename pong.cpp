@@ -48,14 +48,14 @@ public:
             direction_y = -direction_y;
         }
         
-        if (x == 1) {
+        if (x <= 1) {
             if (y >= left.y && y < left.y + left.height) {
                 direction_x = -direction_x;
             } else {
                 score_right++;
                 return true; // Ball missed the paddle
             } 
-        } else if (x == max_x - 2) {
+        } else if (x >= max_x - 2) {
             if (y >= right.y && y < right.y + right.height) {
                 direction_x = -direction_x;
             } else {
@@ -78,7 +78,6 @@ bool display_winner(int player) {
     mvprintw(10, 10, "Player %d wins! \n"
                     "         Press SPACE to start again\n"
                     "         Press q to quit the game", player);
-
     mvprintw(14, 10,
         "/\\_/\\\n"
         "         ( o.o )\n"
@@ -86,12 +85,11 @@ bool display_winner(int player) {
   
     refresh();
     
-    // Wait for 'q' to quit or ' ' (space) to start anew
     int ch;
     while ((ch = getch()) != 'q') {
-        if (ch == ' ') return true; // Restart game
+        if (ch == ' ') return true;
     }
-    return false; // Exit game
+    return false;
 }
 
 int main() {
@@ -100,66 +98,69 @@ int main() {
     curs_set(FALSE);
     keypad(stdscr, TRUE);
 
-    start:
-    int max_y, max_x;
-    getmaxyx(stdscr, max_y, max_x);
+    bool should_restart = true;
 
-    Paddle left_paddle(10, 1, 4);
-    Paddle right_paddle(10, max_x - 2, 4);
-    Ball ball(max_x / 2, max_y / 2);
+    while (should_restart) {
+        int max_y, max_x;
+        getmaxyx(stdscr, max_y, max_x);
 
-    int score_left = 0, score_right = 0;
+        Paddle left_paddle(10, 1, 4);
+        Paddle right_paddle(10, max_x - 2, 4);
+        Ball ball(max_x / 2, max_y / 2);
 
-    timeout(1); // Non-blocking input
+        int score_left = 0, score_right = 0;
 
-    while (true) {
-        clear();
+        timeout(1);
 
-        ball.draw();
-        left_paddle.draw();
-        right_paddle.draw();
-        draw_score(score_left, score_right, max_x);
+        while (true) {
+            clear();
 
-        if (ball.check_collisions(max_x, max_y, left_paddle, right_paddle, score_left, score_right)) {
-            ball = Ball(max_x / 2, max_y / 2); // Reset ball at the center
-        }
-        
-        ball.move();
+            ball.draw();
+            left_paddle.draw();
+            right_paddle.draw();
+            draw_score(score_left, score_right, max_x);
 
-        if (score_left == 2 || score_right == 2) {
-            if (!display_winner(score_left == 2 ? 1 : 2)) {
-                endwin();
-                return 0;
-            } else {
-                goto start; // Restart game
+            if (ball.check_collisions(max_x, max_y, left_paddle, right_paddle, score_left, score_right)) {
+                ball = Ball(max_x / 2, max_y / 2);
             }
-        }
 
-        int ch = getch();
-        switch (ch) {
-            case KEY_UP:
-                right_paddle.move_up(0);
-                break;
-            case KEY_DOWN:
-                right_paddle.move_down(max_y);
-                break;
-            case 'w':
-            case 'W':
-                left_paddle.move_up(0);
-                break;
-            case 's':
-            case 'S':
-                left_paddle.move_down(max_y);
-                break;
-            case 'q':
-            case 'Q':
-            endwin();
-                return 0;
-            default:
-                break;
-        }
+            ball.move();
 
-        refresh();
-        usleep(DELAY);
+            if (score_left == 2 || score_right == 2) {
+                should_restart = display_winner(score_left == 2 ? 1 : 2);
+                break;
+            }
+
+            int ch = getch();
+            switch (ch) {
+                case KEY_UP:
+                    right_paddle.move_up(0);
+                    break;
+                case KEY_DOWN:
+                    right_paddle.move_down(max_y);
+                    break;
+                case 'w':
+                case 'W':
+                    left_paddle.move_up(0);
+                    break;
+                case 's':
+                case 'S':
+                    left_paddle.move_down(max_y);
+                    break;
+                case 'q':
+
+case 'Q':
+                    should_restart = false;
+                    break;
+                default:
+                    break;
+            }
+
+            refresh();
+            usleep(DELAY);
+        }
     }
+
+    endwin();
+    return 0;
 }
