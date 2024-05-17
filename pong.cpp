@@ -3,7 +3,7 @@
 #include <cstdlib>
 #include <ctime>
 
-#define DELAY 50000
+#define DELAY 70000
 
 class Paddle {
 public:
@@ -148,8 +148,7 @@ int main() {
                     left_paddle.move_down(max_y);
                     break;
                 case 'q':
-
-case 'Q':
+                case 'Q':
                     should_restart = false;
                     break;
                 default:

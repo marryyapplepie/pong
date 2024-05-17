@@ -2,12 +2,12 @@
 
 pong c++
 
-To compile:
-g++ pong.cpp -o pong -lncurses
-To start the game:
-./pong
-To rule rockets:
-w/s for the left
-up/down for the right
-To quite the game:
-q
+To compile:<br/>
+g++ pong.cpp -o pong -lncurses<br/>
+To start the game:<br/>
+./pong<br/>
+To rule rockets:<br/>
+w/s for the left<br/>
+up/down for the right<br/>
+To quite the game:<br/>
+q<br/>
